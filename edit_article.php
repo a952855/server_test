@@ -23,28 +23,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 載入 bootstrap 的 css 方便我們快速設計網站-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="style.css"/>
     <link rel="shortcut icon" href="images/favicon.ico">
-	<style>
-    label, input { display:block; }
-    input.text { margin-bottom:12px; width:95%; padding: .4em; }
-    fieldset { padding:0; border:0; margin-top:25px; }
-    h1 { font-size: 1.2em; margin: .6em 0; }
-    div#users-contain { width: 350px; margin: 20px 0; }
-    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
-    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
-    .ui-dialog .ui-state-error { padding: .3em; }
-    .validateTips { border: 1px solid transparent; padding: 0.3em; }
-	.no-close .ui-dialog-titlebar-close {	
-	display: none;
-	}
-	div.ui-dialog{
 	
-	background-color:#888888;
-	border-radius:5px;
-}
-
-  </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -144,7 +125,9 @@
 		  data : {
 			  un : $("#register_name").val() ,
 			  pw : $("#register_password").val(),
-			  email : $("#email").val()
+			  email : $("#email").val(),
+			  gender : $("input[name='gender']:checked").val(),
+			  birthday : $("#birthday").val()
 			  
 		  },
 		  dataType : 'html'
@@ -355,83 +338,44 @@
   </head>
 
   <body>
-	<div id="dialog-form1" class = "dialog" >
-	  <p class="validateTips">請輸入帳號密碼</p>
-	 
-	  <form>
-		<fieldset>
-		  <label for="login_name">帳號</label>
-		  <input type="text" name="login_name" id="login_name" class="text ui-widget-content ui-corner-all">
-		  <label for="login_password">密碼</label>
-		  <input type="password" name="login_password" id="login_password" class="text ui-widget-content ui-corner-all">
-	 
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
-	</div>
-	
-	<div id="dialog-form2" class = "dialog" >
-	  <p class="validateTips">註冊</p>
-	 
-	  <form>
-		<fieldset>
-		  <label for="register_name">帳號</label>
-		  <input type="text" name="register_name" id="register_name"  class="text ui-widget-content ui-corner-all">		  
-		  <label for="register_password">密碼</label>
-		  <input type="password" name="register_password" id="register_password"  class="text ui-widget-content ui-corner-all">
-			<label for="email">Email</label>
-			<input type="text" name="email" id="email" value="jane@smith.com" class="text ui-widget-content ui-corner-all">
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
-	</div>
-    <div class = "main clearfix">
-		<div class = "left">
-			歡迎光臨
-			<?php if(!empty($data)){echo $data['user'];}else{echo '訪客';}?>
-			<br>
+		<?php include_once 'menu.php'; ?>
+    
+		
+		
 			
-				<?php if(!empty($data)):?>
-				<a href = "php/logout.php" class = "btn btn-default">登出</a>
-				<?php else:?>
-				<button id = "login" class = "btn btn-default">登入</button>
-				<button id = "register" class = "btn btn-default">註冊</button>
-				<?php endif;?>
 			
-			<div>
-				<a href = "happytime.php">happytime</a>
+			<div class = "container">
+				<div class = "row">
+					<div class = "col-xs-12">
+						<form id="add_article_form">
+						<input type = "hidden" id = "id" value = "<?php echo $_GET['i'];?>">
+							
+						  <input type = "hidden" id="title" value = "<?php echo $_GET['x'];?>">
+										  
+						  <div class="form-group">
+							<label for="content">內容</label>
+							<textarea type="input" class="form-control" rows = "5" id="content"><?php echo $article['content'];?></textarea>
+						  </div>
+						  <button type="submit" class="btn btn-default">修改</button>
+						  <a href = "javascript:void(0);" class="btn btn-default del_article">刪除</a>
+						  <?php if($_GET['i'] == 1):?>
+						  <a href = "javascript:void(0);" class="btn btn-default del_all_article">刪除文章</a>
+						  <?php endif;?>
+						  
+						</form>
+					</div>
+				</div>
+			
 			</div>
-		</div>
-		<div class = "right clearfix" style = "margin: 0 auto;">
-			<h1>我在右邊</h1>
-			
-			<div style = "border-style:double; width:1000px; margin: 0 auto; height:450px;">
 
 			
-				<form id="add_article_form">
-					<input type = "hidden" id = "id" value = "<?php echo $_GET['i'];?>">
-						
-					  <input type = "hidden" id="title" value = "<?php echo $_GET['x'];?>">
-									  
-					  <div class="form-group">
-						<label for="content">內容</label>
-						<textarea type="input" style="margin: 0px; width: 971px; height: 284px;" id="content"><?php echo $article['content'];?></textarea>
-					  </div>
-					  <button type="submit" class="btn btn-default">修改</button>
-					  <a href = "javascript:void(0);" class="btn btn-default del_article">刪除</a>
-					  <?php if($_GET['i'] == 1):?>
-					  <a href = "javascript:void(0);" class="btn btn-default del_all_article">刪除文章</a>
-					  <?php endif;?>
-					  
-				</form>
-			</div>
-		</div>
-	</div>
+				
+
+		
 	
 	
-	 
+	
+	 <?php include_once 'footer.php'; ?>
   </body>
 
 </html>

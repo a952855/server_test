@@ -4,7 +4,7 @@ require_once 'db.php';
 require_once 'functions.php';
 
 //執行新增使用者的方法，直接把整個 $_POST個別的照順序變數丟給方法。
-$edit_result = update_information($_POST['id'] , $_POST['email'], $_POST['password'] ,$_POST['image_path']);
+$edit_result = update_information($_POST['id'] , $_POST['email'], $_POST['password'] ,$_POST['gender'], $_POST['birthday']);
 
 if($edit_result)
 {

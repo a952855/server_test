@@ -10,44 +10,36 @@
 		$data = null;
 	}
 	
-	$list = get_all_article();
+	$list2 = array();
+	
+	if(!empty($_GET['search_article']) && !empty($_GET['text'])){
+						
+	$list2 = search($_GET['search_article'] , $_GET['text']);
+	}
+	
+	
+		
+		$list = get_all_article();
+	
+
 ?>
 <!DOCTYPE html>
 <html lang="zh-TW">
   <head>
-    <title>作品網站</title>
+    <title>文章列表</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <!-- 給行動裝置或平板顯示用，根據裝置寬度而定，初始放大比例 1 -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 載入 bootstrap 的 css 方便我們快速設計網站-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="style.css"/>
     <link rel="shortcut icon" href="images/favicon.ico">
-	<style>
-    label, input { display:block; }
-    input.text { margin-bottom:12px; width:95%; padding: .4em; }
-    fieldset { padding:0; border:0; margin-top:25px; }
-    h1 { font-size: 1.2em; margin: .6em 0; }
-    div#users-contain { width: 350px; margin: 20px 0; }
-    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
-    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
-    .ui-dialog .ui-state-error { padding: .3em; }
-    .validateTips { border: 1px solid transparent; padding: 0.3em; }
-	.no-close .ui-dialog-titlebar-close {	
-	display: none;
-	}
-	div.ui-dialog{
 	
-	background-color:#888888;
-	border-radius:5px;
-}
-
-  </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-  $(document).on("ready" , function(){
+<script> 
+	$(document).on("ready" , function(){
 	  var dialog_login, dialog_register, form_register, form_login ,
  
       // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
@@ -56,9 +48,13 @@
       login_password = $( "#login_password" ),
 	  register_name = $("#register_name"),
 	  email = $("#email"),
+	  
 	  register_password = $("#register_password"),
+	  email1 = $("#email1"),
+	  password = $("#password"),
       //allFields = $( [] ).add( register_name ).add(email).add( register_password ),
-      tips = $( ".validateTips" );
+
+	  tips = $( ".validateTips" );
  
     function updateTips( t ) {
       tips
@@ -213,71 +209,130 @@
       dialog_register.dialog( "open" );
     });
   
-  });
-    
-	
-	
+ /* $("#search").on("submit", function(){
+    			
+    			if($("#text").val() == '' ){
+    				alert("請填入標題或內文");
+    				
+    				
+    			}
+    			else{
+						$.ajax({
+	            type : "POST",
+	            url : "php/search.php", //因為此檔案是放在 admin 資料夾內，若要前往 php，就要回上一層 ../ 找到 php 才能進入 add_article.php
+	            data : {
+					search_article : $("input[name='search_article']:checked").val(),
+					text : $("#text").val()
+					
+	              
+	              
+	               
+	            },
+	            dataType : 'html' //設定該網頁回應的會是 html 格式
+	          }).done(function(data) {
+	            //成功的時候
+	            console.log(data);
+	            if(data == "yes")
+	            {
+	              
+	              
+	            }
+	            else
+	            {
+	           
+	            }
+	            
+	          }).fail(function(jqXHR, textStatus, errorThrown) {
+	            //失敗的時候
+	            alert("有錯誤產生，請看 console log");
+	            console.log(jqXHR.responseText);
+	          });
+					
+				}
+					  //使用 ajax 送出 帳密給 verify_user.php
+			
+    			
+    			return false;
+    		});
   
+	
+	
+	
+	
+		*/
+		
+
+				
+		
+  });
   </script>
+
   </head>
 
   <body>
-	<div id="dialog-form1" class = "dialog" >
-	  <p class="validateTips">請輸入帳號密碼</p>
-	 
-	  <form>
-		<fieldset>
-		  <label for="login_name">帳號</label>
-		  <input type="text" name="login_name" id="login_name" class="text ui-widget-content ui-corner-all">
-		  <label for="login_password">密碼</label>
-		  <input type="password" name="login_password" id="login_password" class="text ui-widget-content ui-corner-all">
-	 
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
-	</div>
 	
-	<div id="dialog-form2" class = "dialog" >
-	  <p class="validateTips">註冊</p>
-	 
-	  <form>
-		<fieldset>
-		  <label for="register_name">帳號</label>
-		  <input type="text" name="register_name" id="register_name"  class="text ui-widget-content ui-corner-all">		  
-		  <label for="register_password">密碼</label>
-		  <input type="password" name="register_password" id="register_password"  class="text ui-widget-content ui-corner-all">
-			<label for="email">Email</label>
-			<input type="text" name="email" id="email" value="jane@smith.com" class="text ui-widget-content ui-corner-all">
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
-	</div>
-    <div class = "main clearfix">
-		<div class = "left">
-			歡迎光臨
-			<?php if(!empty($data)){echo $data['user'];}else{echo '訪客';}?>
-			<br>
+		<?php include_once 'menu.php'; ?>
+			<div style = "min-height:500px;">
+			  <div class="container">
+				<!-- 建立第一個 row 空間，裡面準備放格線系統 -->
+				<div class="row">
+				  <!-- 在 xs 尺寸，佔12格，可參考 http://getbootstrap.com/css/#grid 說明-->
+				  <div class="col-xs-12" >
+					
+						
+					
+					
+						<form id = "search"  method="get" action="" class="form-inline" style = "margin-bottom:10px;">
+						<a href = "add_article.php" class = "btn btn-default" style = "margin-right:10px;">新增文章</a>
+						<label class="radio-inline">
+						  <input type="radio" name="search_article" value="2" checked> 依帳號
+						</label>
+						<label class="radio-inline">
+						  <input type="radio" name="search_article" value="1" > 依文章 
+						</label>
+						
+		
+					  		
+						<label for="title" class="radio-inline"></label>
+						<input type="input" class="form-control" id="text" name = "text" placeholder = "請輸入...">	
+					
+					
+						<button type="submit" class="btn btn-default">搜尋文章</button>
+				
+					  
+						</form>
 			
-				<?php if(!empty($data)):?>
-				<a href = "php/logout.php" class = "btn btn-default">登出</a>
-				<?php else:?>
-				<button id = "login" class = "btn btn-default">登入</button>
-				<button id = "register" class = "btn btn-default">註冊</button>
-				<?php endif;?>
-			
-			<div>
-				<a href = "happytime.php">happytime</a>
-			</div>
-		</div>
-		<div class = "right clearfix" style = "margin: 0 auto;">
-			<h1>我在右邊</h1>
-			<a href = "add_article.php" class = "btn btn-default">新增文章</a>
-			<div style = "border-style:double; width:1000px; margin: 0 auto; height:450px;">
+					
+					
+					
 
-				<div>
-							<?php if(!empty($list)):?>
+					<?php if(!empty($list2)):?>
+							<?php foreach($list2 as $row2):?>
+							<?php 
+								//處理 摘要
+								//去除所有html標籤
+								$abstract = strip_tags($row2['content']);
+								//取得100個字
+								$abstract = mb_substr($abstract, 0, 100, "UTF-8") 
+							?>
+							<!-- 使用 bootstrap 的 panel 來呈現 http://getbootstrap.com/components/#panels-->
+							<div class="panel panel-primary">
+						        <div class="panel-heading">
+						            <h3 class="panel-title">
+						            	<a href="article.php?p=<?php echo $row2['id']; ?>"><?php echo $row2['title']; ?></a>
+						            </h3>
+						        </div>
+						        <div class="panel-body">
+						        	<p>
+										<?php $data2 = get_user($row2['create_id']);?>
+										<span class="label label-info"><?php echo $data2['user']; ?></span>&nbsp;
+						        		<span class="label label-danger"><?php echo $row2['create_date']; ?></span>
+						        	</p>
+						            <?php echo $abstract; ?>
+						        </div>
+						    </div>
+						    <?php endforeach; ?>
+						<?php elseif(empty($list2)): ?>
 							<?php foreach($list as $row):?>
 							<?php 
 								//處理 摘要
@@ -290,24 +345,31 @@
 							<div class="panel panel-primary">
 						        <div class="panel-heading">
 						            <h3 class="panel-title">
-						            	<a href="happytime123.php?p=<?php echo $row['id']; ?>"><?php echo $row['title']; ?></a>
+						            	<a href="article.php?p=<?php echo $row['id']; ?>"><?php echo $row['title']; ?></a>
 						            </h3>
 						        </div>
 						        <div class="panel-body">
 						        	<p>
+										<?php $data = get_user($row['create_id']);?>
+										<span class="label label-info"><?php echo $data['user']; ?></span>&nbsp;
 						        		<span class="label label-danger"><?php echo $row['create_date']; ?></span>
 						        	</p>
 						            <?php echo $abstract; ?>
 						        </div>
 						    </div>
 						    <?php endforeach; ?>
-						<?php else: ?>
-							<h3 class="text-center">尚無文章</h3>
+						<?php else:?>
+						<h3 class="text-center">尚無文章</h3>
 					    <?php endif; ?>
+				  </div>
 				</div>
+			  </div>
 			</div>
-		</div>
-	</div>
+
+    <!-- 頁底 -->
+    <?php include_once 'footer.php'; ?>
+		
+
   </body>
 
 </html>

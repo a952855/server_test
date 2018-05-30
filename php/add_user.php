@@ -4,7 +4,7 @@ require_once 'db.php';
 require_once 'functions.php';
 
 //執行新增使用者的方法，直接把整個 $_POST個別的照順序變數丟給方法。
-$add_result = add_user($_POST['un'], $_POST['pw'], $_POST['email']);
+$add_result = add_user($_POST['un'], $_POST['pw'], $_POST['email'],  $_POST['gender'], $_POST['birthday']);
 
 if($add_result)
 {

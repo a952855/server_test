@@ -351,17 +351,22 @@ function check_has_username($username)
   return $result;
 }
 
+
+
 /**
  * 檢查資料庫有無該使用者名稱
  */
-function add_user($username, $password, $email)
+function add_user($username, $password, $email , $gender , $birthday)
 {
 	//宣告要回傳的結果
   $result = null;
 	//先把密碼用md5加密
 	$password = md5($password);
   //將查詢語法當成字串，記錄在$sql變數中
-  $sql = "INSERT INTO `user` (`user`, `password`, `email`) VALUE ('{$username}', '{$password}', '{$email}');";
+  
+  
+  
+  $sql = "INSERT INTO `user` (`user`, `password`, `email` , `gender` , `birthday`) VALUE ('{$username}', '{$password}', '{$email}' , {$gender} , '{$birthday}');";
 
   //用 mysqli_query 方法取執行請求（也就是sql語法），請求後的結果存在 $query 變數中
   $query = mysqli_query($_SESSION['link'], $sql);
@@ -436,6 +441,7 @@ function add_article($title, $content)
 	//宣告要回傳的結果
   $result = null;
   //建立現在的時間
+  date_default_timezone_set("Asia/Taipei");
   $create_date = date("Y-m-d H:i:s");
 	//內容處理html
 	$content = htmlspecialchars($content);
@@ -490,6 +496,7 @@ function add_word($title, $content)
 	//宣告要回傳的結果
   $result = null;
   //建立現在的時間
+  date_default_timezone_set("Asia/Taipei");
   $create_date = date("Y-m-d H:i:s");
 	//內容處理html
 
@@ -809,7 +816,40 @@ function get_user($id)
   return $result;
 }
 
+function get_user_byname($user)
+{
+  //宣告要回傳的結果
+  $result = null;
 
+  //將查詢語法當成字串，記錄在$sql變數中
+  $sql = "SELECT * FROM `user` WHERE `user` = '{$user}';";
+
+  //用 mysqli_query 方法取執行請求（也就是sql語法），請求後的結果存在 $query 變數中
+  $query = mysqli_query($_SESSION['link'], $sql);
+
+  //如果請求成功
+  if ($query)
+  {
+    //使用 mysqli_num_rows 方法，判別執行的語法，其取得的資料量，是否有一筆資料
+    if (mysqli_num_rows($query) == 1)
+    {
+      //取得的量大於0代表有資料
+      //while迴圈會根據查詢筆數，決定跑的次數
+      //mysqli_fetch_assoc 方法取得 一筆值
+      $result = mysqli_fetch_assoc($query);
+    }
+
+    //釋放資料庫查詢到的記憶體
+    mysqli_free_result($query);
+  }
+  else
+  {
+    echo "{$sql} 語法執行失敗，錯誤訊息：" . mysqli_error($_SESSION['link']);
+  }
+
+  //回傳結果
+  return $result;
+}
 /**
  * 刪除文章
  */
@@ -965,7 +1005,7 @@ function add_work($intro, $image_path, $video_path, $publish)
   //回傳結果
   return $result;
 }
-function update_information($id, $email, $password ,$image_path)
+function update_information($id, $email, $password , $gender , $birthday)
 {	
 	$data = get_user($id);
 	$result = null;
@@ -973,11 +1013,8 @@ function update_information($id, $email, $password ,$image_path)
 		$password = md5($password);
 		
 	}
-	
-	if($image_path == ""){
-		
-		$image_path = NULL;
-	}
+	 
+
 	
 	if($email != $data['email']){
 		
@@ -987,23 +1024,29 @@ function update_information($id, $email, $password ,$image_path)
 	}
 	if($password != $data['password']){
 		
-		$sql = "UPDATE `user` SET   `password` = '{$password}' 
+		$sql = "UPDATE `user` SET  `password` = '{$password}' 
   				WHERE `id` = {$id};";	
-		$query = mysqli_query($_SESSION['link'], $sql);		
+		$query = mysqli_query($_SESSION['link'], $sql);
 	}
-	if($image_path != $data['image']){
+	if($gender != $data['gender']){
 		
-		$sql = "UPDATE `user` SET   `image` = '{$image_path}' 
+		$sql = "UPDATE `user` SET  `gender` = {$gender}
   				WHERE `id` = {$id};";	
-		$query = mysqli_query($_SESSION['link'], $sql);		
-		
+		$query = mysqli_query($_SESSION['link'], $sql);
 	}
-	
-	if($email == $data['email'] && $password == $data['password'] && $image_path == $data['image']){
+	if($birthday != $data['birthday']){
+
+        
+		$sql = "UPDATE `user` SET  `birthday` = '{$birthday}'
+  				WHERE `id` = {$id};";	
+		$query = mysqli_query($_SESSION['link'], $sql);
+	}
+	if($email == $data['email'] && $password == $data['password'] && $gender == $data['gender'] && $birthday == $data['birthday']){
 		
 		$sql = "";	
-		$query = mysqli_query($_SESSION['link'], $sql);		
+		$query = mysqli_query($_SESSION['link'], $sql);
 	}
+
 	
 	//宣告要回傳的結果
 	
@@ -1040,4 +1083,52 @@ function update_information($id, $email, $password ,$image_path)
   //回傳結果
   return $result;
 }
+function search($search_article , $text)
+{	
+	//宣告要回傳的結果
+	
+	$search  = '';
+  $datas = array();
+	if($search_article == 2){
+		$user = get_user_byname($text);
+		$id = $user['id'];
+		$sql = "SELECT * FROM `article` WHERE `create_id` = {$id};";
+	}
+	elseif($search_article == 1){
+		
+		$sql = "SELECT * FROM `article` WHERE `title` = '{$text}';";
+		
+	}
+  //將查詢語法當成字串，記錄在$sql變數中
+  
+
+  //用 mysqli_query 方法取執行請求（也就是sql語法），請求後的結果存在 $query 變數中
+  $query = mysqli_query($_SESSION['link'], $sql);
+
+  //如果請求成功
+  if ($query)
+  {
+    //使用 mysqli_num_rows 方法，判別執行的語法，其取得的資料量，是否有一筆資料
+    if (mysqli_num_rows($query) >= 1)
+    {
+      //取得的量大於0代表有資料
+      //回傳的 $result 就給 true 代表有該帳號，不可以被新增
+      while ($row = mysqli_fetch_assoc($query))
+      {
+        $datas[] = $row;
+      }
+    }
+
+    //釋放資料庫查詢到的記憶體
+    mysqli_free_result($query);
+  }
+  else
+  {
+    echo "{$sql} 語法執行失敗，錯誤訊息：" . mysqli_error($_SESSION['link']);
+  }
+
+  //回傳結果
+  return $datas;
+}
+
 ?>

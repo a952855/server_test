@@ -27,28 +27,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 載入 bootstrap 的 css 方便我們快速設計網站-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="style.css"/>
     <link rel="shortcut icon" href="images/favicon.ico">
-	<style>
-    label, input { display:block; }
-    input.text { margin-bottom:12px; width:95%; padding: .4em; }
-    fieldset { padding:0; border:0; margin-top:25px; }
-    h1 { font-size: 1.2em; margin: .6em 0; }
-    div#users-contain { width: 350px; margin: 20px 0; }
-    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
-    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
-    .ui-dialog .ui-state-error { padding: .3em; }
-    .validateTips { border: 1px solid transparent; padding: 0.3em; }
-	.no-close .ui-dialog-titlebar-close {	
-	display: none;
-	}
-	div.ui-dialog{
 	
-	background-color:#888888;
-	border-radius:5px;
-}
-
-  </style>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
@@ -147,7 +128,9 @@
 		  data : {
 			  un : $("#register_name").val() ,
 			  pw : $("#register_password").val(),
-			  email : $("#email").val()
+			  email : $("#email").val(),
+			  gender : $("input[name='gender']:checked").val(),
+			  birthday : $("#birthday").val()
 			  
 		  },
 		  dataType : 'html'
@@ -300,91 +283,49 @@
   </head>
 
   <body>
-	<div id="dialog-form1" class = "dialog" >
-	  <p class="validateTips">請輸入帳號密碼</p>
-	 
-	  <form>
-		<fieldset>
-		  <label for="login_name">帳號</label>
-		  <input type="text" name="login_name" id="login_name" class="text ui-widget-content ui-corner-all">
-		  <label for="login_password">密碼</label>
-		  <input type="password" name="login_password" id="login_password" class="text ui-widget-content ui-corner-all">
-	 
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
-	</div>
-	
-	<div id="dialog-form2" class = "dialog" >
-	  <p class="validateTips">註冊</p>
-	 
-	  <form>
-		<fieldset>
-		  <label for="register_name">帳號</label>
-		  <input type="text" name="register_name" id="register_name"  class="text ui-widget-content ui-corner-all">		  
-		  <label for="register_password">密碼</label>
-		  <input type="password" name="register_password" id="register_password"  class="text ui-widget-content ui-corner-all">
-			<label for="email">Email</label>
-			<input type="text" name="email" id="email" value="jane@smith.com" class="text ui-widget-content ui-corner-all">
-		  <!-- Allow form submission with keyboard without duplicating the dialog button -->
-		  <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-		</fieldset>
-	  </form>
-	</div>
-    <div class = "main clearfix">
-		<div class = "left">
-			歡迎光臨
-			<?php if(!empty($data)){echo $data['user'];}else{echo '訪客';}?>
-			<br>
-			
-				<?php if(!empty($data)):?>
-				<a href = "php/logout.php" class = "btn btn-default">登出</a>
-				<?php else:?>
-				<button id = "login" class = "btn btn-default">登入</button>
-				<button id = "register" class = "btn btn-default">註冊</button>
-				<?php endif;?>
-			
-			<div>
-				<a href = "happytime.php">happytime</a>
-			</div>
-		</div>
-		<div class = "right clearfix" style = "margin: 0 auto;">
-			<h1>我在右邊</h1>
-
-			<?php if($all_article):?>
-                <?php foreach($all_article as $datas):?>
-				<div style = "border-style:double; width:1000px; margin: 0 auto; min-height:450px;">
-
-				<div class = "left">
-					<?php $user = get_user($datas['user_id']); echo $user['user'];?>
-					<?php if($data['user'] == $user['user']):?>
-						<br><a href = "edit_article.php?x=<?php echo $article['title'];?>&i=<?php echo $datas['id'];?>">編輯文章</a>
-					<?php endif;?>
-				</div>
+	<?php include_once 'menu.php'; ?>
+    
+		
+		<div class = "container">
+			<div class ="row">
+				<div class = "col-xs-12">
 				
-				<div class = "right" style = "height:100%;">
+				
 					<?php if($all_article):?>
-					<p><?php echo $datas['title'];?>&nbsp<?php echo $datas['id'];?>樓</p>
-					
-					<?php echo $datas['content'];?>
-					
-					<?php endif; ?>
+						<?php foreach($all_article as $datas):?>
+							<?php $user = get_user($datas['user_id']);?>
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<h3 class="panel-title">
+											<?php echo $article['title']; ?>
+										</h3>
+									</div>
+									<div class="panel-body">
+										<p>
+											<?php $user = get_user($datas['user_id']);?>
+												<span class="label label-info"><?php echo $user['user']; ?></span>&nbsp;
+												<span class="label label-danger"><?php echo $datas['create_date']; ?></span>&nbsp;
+												<span class="badge badge-success"><?php echo $datas['id'];?>樓</span>
+										</p>
+											<?php echo $datas['content']; ?>
+									</div>
+									<?php if($data['user'] == $user['user']):?>
+										<br><a href = "edit_article.php?x=<?php echo $article['title'];?>&i=<?php echo $datas['id'];?>">編輯文章</a>
+									<?php endif;?>
+								</div>
+							<hr>
 
-				</div>
-				    <div style = "clear:both;">
-					</div>
-			</div>
+
                 <?php endforeach;?>
              
               <?php endif;?>
 			
-			<div>
+			<div class = "text-center" style = "margin-bottom:5px;">
 				<form id = "add_form">
 					<div class="form-group">
 					<input type = "hidden" id = "title" value = "<?php echo $article['title']; ?>">
 					<label for="content">留言區</label>
-					<textarea autofocus type="input" style="margin: 0px auto; width: 1000px; height: 90px;" id="content"></textarea>
+					<textarea autofocus type="input" class="form-control" rows = "3" id="content"></textarea>
 					</div>
 					<div class="form-group in_image" style = "display:none;">					
 					<label for="in_image" style = "display:inline-block">嵌入圖片</label>
@@ -401,8 +342,13 @@
 					<button type="submit" class="btn btn-default">送出</button>
 				</form>
 			</div>
+				</div>
+			</div>
+			
+
+			
 		</div>
-	</div>
+	<?php include_once 'footer.php'; ?>
   </body>
 
 </html>
